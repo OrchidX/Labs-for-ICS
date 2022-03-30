@@ -1,0 +1,6 @@
+Generally speaking, the modified code performs 5 optimizations. 
+1) It uses instruction iaddq instead of the combination of irmovq and addq.
+2) It applies 10*2 loop unrolling, using 2 temporary registers %r8 and %r9.
+3) When dealing with the final few elements, the code uses ternary search to determine the number of the remaining elements. Since 9 = 3^2, ternary search is better than binary search, which might generate floating number.
+4) By staggering memory reading and writing, it partly eliminate the load/use hazards.
+5) The shorter the length of src is, the greater the impact of constant instructions on CPE. Meanwhile, the pipe-full.hcl uses an always taken branch prediction strategy. Therefore, the order of the length judgement is specially arranged, prioritizing the shorter ones, to reduce the average cost of mispredicted branches.

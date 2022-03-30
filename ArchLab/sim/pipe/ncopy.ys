@@ -1,0 +1,162 @@
+#/* $begin ncopy-ys */
+##################################################################
+# ncopy.ys - Copy a src block of len words to dst.
+# Return the number of positive words (>0) contained in src.
+#
+# Name: XingYuhan
+# ID: 2000017797@stu.pku.edu.cn
+# Description of the optimizations:
+#    Generally speaking, the modified code performs 5 optimizations. 
+# 1) It uses instruction iaddq instead of the combination of irmovq and addq.
+# 2) It applies 10*2 loop unrolling, using 2 temporary registers %r8 and %r9.
+# 3) When dealing with the final few elements, the code uses ternary search to determine the #    number of the remaining elements. Since 9 = 3^2, ternary search is better than binary 
+#    search, which might generate floating number.
+# 4) By staggering memory reading and writing, it partly eliminate the load/use hazards.
+# 5) The shorter the length of src is, the greater the impact of constant instructions on #    CPE. Meanwhile, the pipe-full.hcl uses an always taken branch prediction strategy.   
+#    Therefore, the order of the length judgement is specially arranged, prioritizing the #    shorter ones, to reduce the average cost of mispredicted branches.
+# Description ends
+##################################################################
+# Do not modify this portion
+# Function prologue.
+# %rdi = src, %rsi = dst, %rdx = len
+ncopy:
+
+##################################################################
+# You can modify this portion
+	# Loop header
+	iaddq $-10, %rdx	# len < 10?
+	jl L0			# if so, goto L0
+	
+L1: 	mrmovq (%rdi), %r8
+	mrmovq 8(%rdi), %r9
+	rmmovq %r8, (%rsi)
+	andq %r8, %r8
+	jle L2
+	iaddq $1, %rax
+L2:	mrmovq 16(%rdi), %r8
+	rmmovq %r9, 8(%rsi)
+	andq %r9, %r9
+	jle L3
+	iaddq $1, %rax
+L3:	mrmovq 24(%rdi), %r9
+	rmmovq %r8, 16(%rsi)
+	andq %r8, %r8
+	jle L4
+	iaddq $1, %rax
+L4:	mrmovq 32(%rdi), %r8
+	rmmovq %r9, 24(%rsi)
+	andq %r9, %r9
+	jle L5
+	iaddq $1, %rax
+L5:	mrmovq 40(%rdi), %r9
+	rmmovq %r8, 32(%rsi)
+	andq %r8, %r8
+	jle L6
+	iaddq $1, %rax
+L6:	mrmovq 48(%rdi), %r8
+	rmmovq %r9, 40(%rsi)
+	andq %r9, %r9
+	jle L7
+	iaddq $1, %rax
+L7:	mrmovq 56(%rdi), %r9
+	rmmovq %r8, 48(%rsi)
+	andq %r8, %r8
+	jle L8
+	iaddq $1, %rax
+L8:	mrmovq 64(%rdi), %r8
+	rmmovq %r9, 56(%rsi)
+	andq %r9, %r9
+	jle L9
+	iaddq $1, %rax
+L9:	mrmovq 72(%rdi), %r9
+	rmmovq %r8, 64(%rsi)
+	andq %r8, %r8
+	jle L10
+	iaddq $1, %rax
+L10:	rmmovq %r9, 72(%rsi)
+	andq %r9, %r9
+	jle test
+	iaddq $1, %rax
+	
+test:	iaddq $80, %rdi	# src += 10
+	iaddq $80, %rsi	# dst += 10
+	iaddq $-10, %rdx	# len >= 10?
+	jge L1			# if so, goto L1
+
+L0:	iaddq $7, %rdx		# compare len : 3
+	jl Less		# if >, goto More, if <, goto Less
+	je R3			# if ==, goto R3
+	
+More:	iaddq $-3, %rdx	# compare len : 6
+	jl MLess
+	je R6			# if ==, goto R6
+MMore:	iaddq $-2, %rdx	# compare len : 8
+	jl R7
+	je R8
+	jmp R9
+MLess:	iaddq $1, %rdx		# compare len : 5
+	jl R4
+	je R5
+	
+Less:	iaddq $2, %rdx		# compare len : 1
+	je R1			# if ==, goto R1
+	iaddq $-1, %rdx
+	je R2			# if len == 2, goto R2
+	ret			# id len == 0, return
+
+
+R9:	mrmovq 64(%rdi), %r8
+	rmmovq %r8, 64(%rsi)
+	andq %r8, %r8
+R8:	mrmovq 56(%rdi), %r8
+	jle N8
+	iaddq $1, %rax
+N8:	rmmovq %r8, 56(%rsi)
+	andq %r8, %r8
+R7:	mrmovq 48(%rdi), %r8
+	jle N7
+	iaddq $1, %rax
+N7:	rmmovq %r8, 48(%rsi)
+	andq %r8, %r8
+R6:	mrmovq 40(%rdi), %r8
+	jle N6
+	iaddq $1, %rax
+N6:	rmmovq %r8, 40(%rsi)
+	andq %r8, %r8
+R5:	mrmovq 32(%rdi), %r8
+	jle N5
+	iaddq $1, %rax
+N5:	rmmovq %r8, 32(%rsi)
+	andq %r8, %r8
+R4:	mrmovq 24(%rdi), %r8
+	jle N4
+	iaddq $1, %rax
+N4:	rmmovq %r8, 24(%rsi)
+	andq %r8, %r8
+R3:	mrmovq 16(%rdi), %r8
+	jle N3
+	iaddq $1, %rax
+N3:	rmmovq %r8, 16(%rsi)
+	andq %r8, %r8
+R2:	mrmovq 8(%rdi), %r8
+	jle N2
+	iaddq $1, %rax
+N2:	rmmovq %r8, 8(%rsi)
+	andq %r8, %r8
+R1:	mrmovq (%rdi), %r8
+	jle N1
+	iaddq $1, %rax
+N1:	rmmovq %r8, (%rsi)
+	andq %r8, %r8
+	jle Done
+	iaddq $1, %rax
+
+##################################################################
+# Do not modify the following section of code
+# Function epilogue.
+Done:
+	ret
+##################################################################
+# Keep the following label at the end of your function
+End:
+#/* $end ncopy-ys */

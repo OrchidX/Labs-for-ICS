@@ -1,0 +1,71 @@
+#/* $begin ncopy-ys */
+##################################################################
+# ncopy.ys - Copy a src block of len words to dst.
+# Return the number of positive words (>0) contained in src.
+#
+# Include your name and ID here.
+#
+# Describe how and why you modified the baseline code.
+#
+##################################################################
+# Do not modify this portion
+# Function prologue.
+# %rdi = src, %rsi = dst, %rdx = len
+# i in %rcx, limit in %rbp
+ncopy:
+
+##################################################################
+# You can modify this portion
+	# Loop header
+	xorq %rax,%rax		# count = 0;
+	rrmovq %rdx, %rbp
+	iaddq $-2, %rbp
+	xorq %rcx, %rcx
+Test:	rrmovq %rcx, %r8
+	subq %rbp, %r8
+	jge Next		
+	
+Loop:	mrmovq (%rdi), %r8	# read val from src...
+	mrmovq 8(%rdi), %r9
+	mrmovq 16(%rdi), %r10
+	rrmovq %rax, %rbx
+	iaddq $1, %rbx
+	andq %r8, %r8	
+	cmovg %rbx, %rax
+	rrmovq %rax, %rbx
+	iaddq $1, %rbx
+	andq %r9, %r9	
+	cmovg %rbx, %rax
+	rrmovq %rax, %rbx
+	iaddq $1, %rbx
+	andq %r10, %r10	
+	cmovg %rbx, %rax
+	rmmovq %r8, (%rsi)	# ...and store it to dst
+	rmmovq %r9, 8(%rsi)
+	rmmovq %r10, 16(%rsi)
+	iaddq $24, %rdi		
+	iaddq $24, %rsi		
+	iaddq $3, %rcx	
+	jmp Test
+Next:	rrmovq %rcx, %r8
+	subq %rdx, %r8
+	jge Done
+	mrmovq (%rdi), %r10
+	rrmovq %rax, %rbx
+	iaddq $1, %rbx
+	andq %r10, %r10
+	cmovg %rbx, %rax
+	rmmovq %r10, (%rsi)
+	iaddq $1, %rcx
+	iaddq $8, %rdi
+	iaddq $8, %rsi
+	jmp Next
+##################################################################
+# Do not modify the following section of code
+# Function epilogue.
+Done:
+	ret
+##################################################################
+# Keep the following label at the end of your function
+End:
+#/* $end ncopy-ys */

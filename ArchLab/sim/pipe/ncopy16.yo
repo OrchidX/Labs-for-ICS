@@ -1,0 +1,189 @@
+                            | #/* $begin ncopy-ys */
+                            | ##################################################################
+                            | # ncopy.ys - Copy a src block of len words to dst.
+                            | # Return the number of positive words (>0) contained in src.
+                            | #
+                            | # Include your name and ID here.
+                            | #
+                            | # Describe how and why you modified the baseline code.
+                            | #
+                            | ##################################################################
+                            | # Do not modify this portion
+                            | # Function prologue.
+                            | # %rdi = src, %rsi = dst, %rdx = len
+                            | # i in %rcx, limit in %rbp
+0x000:                      | ncopy:
+                            | 
+                            | ##################################################################
+                            | # You can modify this portion
+                            | 	# Unr16 header
+0x000: 6300                 | 	xorq %rax,%rax		# count = 0;
+0x002: 2025                 | 	rrmovq %rdx, %rbp
+0x004: c0f5f1ffffffffffffff | 	iaddq $-15, %rbp
+0x00e: 6311                 | 	xorq %rcx, %rcx
+0x010: 2018                 | Test1:	rrmovq %rcx, %r8
+0x012: 6158                 | 	subq %rbp, %r8
+0x014: 758402000000000000   | 	jge Next1		
+0x01d: 50870000000000000000 | Unr16:	mrmovq (%rdi), %r8	# read val from src...
+0x027: 50970800000000000000 | 	mrmovq 8(%rdi), %r9
+0x031: 50a71000000000000000 | 	mrmovq 16(%rdi), %r10
+0x03b: 50b71800000000000000 | 	mrmovq 24(%rdi), %r11
+0x045: 2003                 | 	rrmovq %rax, %rbx
+0x047: c0f30100000000000000 | 	iaddq $1, %rbx
+0x051: 6288                 | 	andq %r8, %r8	
+0x053: 2630                 | 	cmovg %rbx, %rax
+0x055: 2003                 | 	rrmovq %rax, %rbx
+0x057: c0f30100000000000000 | 	iaddq $1, %rbx
+0x061: 6299                 | 	andq %r9, %r9	
+0x063: 2630                 | 	cmovg %rbx, %rax
+0x065: 2003                 | 	rrmovq %rax, %rbx
+0x067: c0f30100000000000000 | 	iaddq $1, %rbx
+0x071: 62aa                 | 	andq %r10, %r10	
+0x073: 2630                 | 	cmovg %rbx, %rax
+0x075: 2003                 | 	rrmovq %rax, %rbx
+0x077: c0f30100000000000000 | 	iaddq $1, %rbx
+0x081: 62bb                 | 	andq %r11, %r11
+0x083: 2630                 | 	cmovg %rbx, %rax
+0x085: 40860000000000000000 | 	rmmovq %r8, (%rsi)	# ...and store it to dst
+0x08f: 40960800000000000000 | 	rmmovq %r9, 8(%rsi)
+0x099: 40a61000000000000000 | 	rmmovq %r10, 16(%rsi)
+0x0a3: 40b61800000000000000 | 	rmmovq %r11, 24(%rsi)
+                            | 	
+0x0ad: 50872000000000000000 | 	mrmovq 32(%rdi), %r8	# read val from src...
+0x0b7: 50972800000000000000 | 	mrmovq 40(%rdi), %r9
+0x0c1: 50a73000000000000000 | 	mrmovq 48(%rdi), %r10
+0x0cb: 50b73800000000000000 | 	mrmovq 56(%rdi), %r11
+0x0d5: 2003                 | 	rrmovq %rax, %rbx
+0x0d7: c0f30100000000000000 | 	iaddq $1, %rbx
+0x0e1: 6288                 | 	andq %r8, %r8	
+0x0e3: 2630                 | 	cmovg %rbx, %rax
+0x0e5: 2003                 | 	rrmovq %rax, %rbx
+0x0e7: c0f30100000000000000 | 	iaddq $1, %rbx
+0x0f1: 6299                 | 	andq %r9, %r9	
+0x0f3: 2630                 | 	cmovg %rbx, %rax
+0x0f5: 2003                 | 	rrmovq %rax, %rbx
+0x0f7: c0f30100000000000000 | 	iaddq $1, %rbx
+0x101: 62aa                 | 	andq %r10, %r10	
+0x103: 2630                 | 	cmovg %rbx, %rax
+0x105: 2003                 | 	rrmovq %rax, %rbx
+0x107: c0f30100000000000000 | 	iaddq $1, %rbx
+0x111: 62bb                 | 	andq %r11, %r11
+0x113: 2630                 | 	cmovg %rbx, %rax
+0x115: 40862000000000000000 | 	rmmovq %r8, 32(%rsi)	# ...and store it to dst
+0x11f: 40962800000000000000 | 	rmmovq %r9, 40(%rsi)
+0x129: 40a63000000000000000 | 	rmmovq %r10, 48(%rsi)
+0x133: 40b63800000000000000 | 	rmmovq %r11, 56(%rsi)
+                            | 	
+0x13d: 50874000000000000000 | 	mrmovq 64(%rdi), %r8	# read val from src...
+0x147: 50974800000000000000 | 	mrmovq 72(%rdi), %r9
+0x151: 50a75000000000000000 | 	mrmovq 80(%rdi), %r10
+0x15b: 50b75800000000000000 | 	mrmovq 88(%rdi), %r11
+0x165: 2003                 | 	rrmovq %rax, %rbx
+0x167: c0f30100000000000000 | 	iaddq $1, %rbx
+0x171: 6288                 | 	andq %r8, %r8	
+0x173: 2630                 | 	cmovg %rbx, %rax
+0x175: 2003                 | 	rrmovq %rax, %rbx
+0x177: c0f30100000000000000 | 	iaddq $1, %rbx
+0x181: 6299                 | 	andq %r9, %r9	
+0x183: 2630                 | 	cmovg %rbx, %rax
+0x185: 2003                 | 	rrmovq %rax, %rbx
+0x187: c0f30100000000000000 | 	iaddq $1, %rbx
+0x191: 62aa                 | 	andq %r10, %r10	
+0x193: 2630                 | 	cmovg %rbx, %rax
+0x195: 2003                 | 	rrmovq %rax, %rbx
+0x197: c0f30100000000000000 | 	iaddq $1, %rbx
+0x1a1: 62bb                 | 	andq %r11, %r11
+0x1a3: 2630                 | 	cmovg %rbx, %rax
+0x1a5: 40864000000000000000 | 	rmmovq %r8, 64(%rsi)	# ...and store it to dst
+0x1af: 40964800000000000000 | 	rmmovq %r9, 72(%rsi)
+0x1b9: 40a65000000000000000 | 	rmmovq %r10, 80(%rsi)
+0x1c3: 40b65800000000000000 | 	rmmovq %r11, 88(%rsi)
+                            | 	
+0x1cd: 50876000000000000000 | 	mrmovq 96(%rdi), %r8	# read val from src...
+0x1d7: 50976800000000000000 | 	mrmovq 104(%rdi), %r9
+0x1e1: 50a77000000000000000 | 	mrmovq 112(%rdi), %r10
+0x1eb: 50b77800000000000000 | 	mrmovq 120(%rdi), %r11
+0x1f5: 2003                 | 	rrmovq %rax, %rbx
+0x1f7: c0f30100000000000000 | 	iaddq $1, %rbx
+0x201: 6288                 | 	andq %r8, %r8	
+0x203: 2630                 | 	cmovg %rbx, %rax
+0x205: 2003                 | 	rrmovq %rax, %rbx
+0x207: c0f30100000000000000 | 	iaddq $1, %rbx
+0x211: 6299                 | 	andq %r9, %r9	
+0x213: 2630                 | 	cmovg %rbx, %rax
+0x215: 2003                 | 	rrmovq %rax, %rbx
+0x217: c0f30100000000000000 | 	iaddq $1, %rbx
+0x221: 62aa                 | 	andq %r10, %r10	
+0x223: 2630                 | 	cmovg %rbx, %rax
+0x225: 2003                 | 	rrmovq %rax, %rbx
+0x227: c0f30100000000000000 | 	iaddq $1, %rbx
+0x231: 62bb                 | 	andq %r11, %r11
+0x233: 2630                 | 	cmovg %rbx, %rax
+0x235: 40866000000000000000 | 	rmmovq %r8, 96(%rsi)	# ...and store it to dst
+0x23f: 40966800000000000000 | 	rmmovq %r9, 104(%rsi)
+0x249: 40a67000000000000000 | 	rmmovq %r10, 112(%rsi)
+0x253: 40b67800000000000000 | 	rmmovq %r11, 120(%rsi)
+                            | 	
+0x25d: c0f78000000000000000 | 	iaddq $128, %rdi
+0x267: c0f68000000000000000 | 	iaddq $128, %rsi
+0x271: c0f11000000000000000 | 	iaddq $16, %rcx
+0x27b: 701000000000000000   | 	jmp Test1
+                            | 	
+0x284: c0f50c00000000000000 | Next1:	iaddq $12, %rbp
+0x28e: 2018                 | Test2:	rrmovq %rcx, %r8
+0x290: 6158                 | 	subq %rbp, %r8
+0x292: 755203000000000000   | 	jge Next2
+                            | 	
+0x29b: 50870000000000000000 | Unr4:	mrmovq (%rdi), %r8	# read val from src...
+0x2a5: 50970800000000000000 | 	mrmovq 8(%rdi), %r9
+0x2af: 50a71000000000000000 | 	mrmovq 16(%rdi), %r10
+0x2b9: 50b71800000000000000 | 	mrmovq 24(%rdi), %r11
+0x2c3: 2003                 | 	rrmovq %rax, %rbx
+0x2c5: c0f30100000000000000 | 	iaddq $1, %rbx
+0x2cf: 6288                 | 	andq %r8, %r8	
+0x2d1: 2630                 | 	cmovg %rbx, %rax
+0x2d3: 2003                 | 	rrmovq %rax, %rbx
+0x2d5: c0f30100000000000000 | 	iaddq $1, %rbx
+0x2df: 6299                 | 	andq %r9, %r9	
+0x2e1: 2630                 | 	cmovg %rbx, %rax
+0x2e3: 2003                 | 	rrmovq %rax, %rbx
+0x2e5: c0f30100000000000000 | 	iaddq $1, %rbx
+0x2ef: 62aa                 | 	andq %r10, %r10	
+0x2f1: 2630                 | 	cmovg %rbx, %rax
+0x2f3: 2003                 | 	rrmovq %rax, %rbx
+0x2f5: c0f30100000000000000 | 	iaddq $1, %rbx
+0x2ff: 62bb                 | 	andq %r11, %r11
+0x301: 2630                 | 	cmovg %rbx, %rax
+0x303: 40860000000000000000 | 	rmmovq %r8, (%rsi)	# ...and store it to dst
+0x30d: 40960800000000000000 | 	rmmovq %r9, 8(%rsi)
+0x317: 40a61000000000000000 | 	rmmovq %r10, 16(%rsi)
+0x321: 40b61800000000000000 | 	rmmovq %r11, 24(%rsi)
+                            | 	
+0x32b: c0f72000000000000000 | 	iaddq $32, %rdi
+0x335: c0f62000000000000000 | 	iaddq $32, %rsi
+0x33f: c0f10400000000000000 | 	iaddq $4, %rcx
+0x349: 708e02000000000000   | 	jmp Test2
+                            | 
+0x352: 2018                 | Next2:	rrmovq %rcx, %r8
+0x354: 6128                 | 	subq %rdx, %r8
+0x356: 75aa03000000000000   | 	jge Done
+0x35f: 50870000000000000000 | 	mrmovq (%rdi), %r8
+0x369: 2003                 | 	rrmovq %rax, %rbx
+0x36b: c0f30100000000000000 | 	iaddq $1, %rbx
+0x375: 6288                 | 	andq %r8, %r8
+0x377: 2630                 | 	cmovg %rbx, %rax
+0x379: 40860000000000000000 | 	rmmovq %r8, (%rsi)
+                            | 	
+0x383: c0f70800000000000000 | 	iaddq $8, %rdi
+0x38d: c0f60800000000000000 | 	iaddq $8, %rsi
+0x397: c0f10100000000000000 | 	iaddq $1, %rcx
+0x3a1: 705203000000000000   | 	jmp Next2
+                            | ##################################################################
+                            | # Do not modify the following section of code
+                            | # Function epilogue.
+0x3aa:                      | Done:
+0x3aa: 90                   | 	ret
+                            | ##################################################################
+                            | # Keep the following label at the end of your function
+0x3ab:                      | End:
+                            | #/* $end ncopy-ys */
