@@ -1,0 +1,6 @@
+The first law of computer science: Every problem is solved by yet another indirection.
+0 1 1 3 5 11
+0 220
+14 7
+123458
+1 2 3 4 5 6
