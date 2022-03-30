@@ -1,0 +1,78 @@
+                            | # Name: XingYuhan
+                            | # ID: 2000017797@stu.pku.edu.cn
+                            | 
+                            | # Execution begins at address 0
+0x000:                      | 	.pos 0
+0x000: 30f40002000000000000 | 	irmovq stack, %rsp
+0x00a: 804800000000000000   | 	call main
+0x013: 00                   | 	halt
+                            | 
+                            | # Array of 6 elements
+0x018:                      | 	.align 8
+0x018:                      | Array:
+0x018: ca0b000000000000     | 	.quad 0xbca
+0x020: ba0c000000000000     | 	.quad 0xcba
+0x028: cb0a000000000000     | 	.quad 0xacb
+0x030: ab0c000000000000     | 	.quad 0xcab
+0x038: bc0a000000000000     | 	.quad 0xabc
+0x040: ac0b000000000000     | 	.quad 0xbac
+                            | 
+0x048:                      | main:
+0x048: 30f71800000000000000 | 	irmovq Array, %rdi
+0x052: 30f60600000000000000 | 	irmovq $6, %rsi
+0x05c: 806600000000000000   | 	call bubble_sort
+0x065: 90                   | 	ret
+                            | 
+                            | # void bubble_sort(long* data, long count)
+                            | # data in %rdi, count in %rsi, count == 6
+                            | # i in %rdx, last in %rcx
+0x066:                      | bubble_sort:
+0x066: 30f80100000000000000 | 	irmovq $1, %r8
+0x070: 6186                 | 	subq %r8, %rsi	# (count-1) in %rsi
+                            | 	
+                            | # The following code block computes the real last and stores in %rcx
+0x072: 2071                 | 	rrmovq %rdi, %rcx
+0x074:                      | test0:
+0x074: 6266                 | 	andq %rsi, %rsi	# 
+0x076: 71a000000000000000   | 	jle test1
+0x07f: 30f80800000000000000 | 	irmovq $8, %r8
+0x089: 30f90100000000000000 | 	irmovq $1, %r9
+0x093: 6081                 | 	addq %r8, %rcx
+0x095: 6196                 | 	subq %r9, %rsi
+0x097: 707400000000000000   | 	jmp test0
+                            | # Block ends
+                            | 
+0x0a0:                      | test1:
+0x0a0: 207a                 | 	rrmovq %rdi, %r10	# Store the copy of data in %r10
+0x0a2: 611a                 | 	subq %rcx, %r10	# Compare data : last
+0x0a4: 750f01000000000000   | 	jge done		# If >=, goto done
+0x0ad:                      | loop2_init:
+0x0ad: 2072                 | 	rrmovq %rdi, %rdx	# i = data
+0x0af:                      | test2:
+0x0af: 202b                 | 	rrmovq %rdx, %r11	# Store the copy of i in %r11
+0x0b1: 611b                 | 	subq %rcx, %r11	# Compare i : last
+0x0b3: 750401000000000000   | 	jge next1		# If >=, goto next1
+0x0bc:                      | loop2:
+0x0bc: 50c20000000000000000 | 	mrmovq 0(%rdx), %r12	# Get *i and store in %r12
+0x0c6: 50d20800000000000000 | 	mrmovq 8(%rdx), %r13	# Get *(i+1) and store in %r13
+0x0d0: 61cd                 | 	subq %r12, %r13	# Compare *(i+1) : *(i)
+0x0d2: 75f900000000000000   | 	jge next2		# If >=, goto next2
+                            | 	
+                            | # If <, the following code block does the swap 
+0x0db: 50d20800000000000000 | 	mrmovq 8(%rdx), %r13
+0x0e5: 40c20800000000000000 | 	rmmovq %r12, 8(%rdx)
+0x0ef: 40d20000000000000000 | 	rmmovq %r13, 0(%rdx)
+                            | # Block ends
+                            | 
+0x0f9:                      | next2:
+0x0f9: 6082                 | 	addq %r8, %rdx		# i++
+0x0fb: 70af00000000000000   | 	jmp test2
+0x104:                      | next1:
+0x104: 6181                 | 	subq %r8, %rcx		# last--
+0x106: 70a000000000000000   | 	jmp test1
+0x10f:                      | done:
+0x10f: 90                   | 	ret
+                            | 
+                            | # Stack starts here and grows to lower addresses
+0x200:                      | 	.pos 0x200
+0x200:                      | stack:

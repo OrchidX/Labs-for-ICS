@@ -1,0 +1,78 @@
+# Name: XingYuhan
+# ID: 2000017797@stu.pku.edu.cn
+
+# Execution begins at address 0
+	.pos 0
+	irmovq stack, %rsp
+	call main
+	halt
+
+# Array of 6 elements
+	.align 8
+Array:
+	.quad 0xbca
+	.quad 0xcba
+	.quad 0xacb
+	.quad 0xcab
+	.quad 0xabc
+	.quad 0xbac
+
+main:
+	irmovq Array, %rdi
+	irmovq $6, %rsi
+	call bubble_sort
+	ret
+
+# void bubble_sort(long* data, long count)
+# data in %rdi, count in %rsi, count == 6
+# i in %rdx, last in %rcx
+bubble_sort:
+	irmovq $1, %r8
+	subq %r8, %rsi	# (count-1) in %rsi
+	
+# The following code block computes the real last and stores in %rcx
+	rrmovq %rdi, %rcx
+test0:
+	andq %rsi, %rsi	# 
+	jle test1
+	irmovq $8, %r8
+	irmovq $1, %r9
+	addq %r8, %rcx
+	subq %r9, %rsi
+	jmp test0
+# Block ends
+
+test1:
+	rrmovq %rdi, %r10	# Store the copy of data in %r10
+	subq %rcx, %r10	# Compare data : last
+	jge done		# If >=, goto done
+loop2_init:
+	rrmovq %rdi, %rdx	# i = data
+test2:
+	rrmovq %rdx, %r11	# Store the copy of i in %r11
+	subq %rcx, %r11	# Compare i : last
+	jge next1		# If >=, goto next1
+loop2:
+	mrmovq 0(%rdx), %r12	# Get *i and store in %r12
+	mrmovq 8(%rdx), %r13	# Get *(i+1) and store in %r13
+	subq %r12, %r13	# Compare *(i+1) : *(i)
+	jge next2		# If >=, goto next2
+	
+# If <, the following code block does the swap 
+	mrmovq 8(%rdx), %r13
+	rmmovq %r12, 8(%rdx)
+	rmmovq %r13, 0(%rdx)
+# Block ends
+
+next2:
+	addq %r8, %rdx		# i++
+	jmp test2
+next1:
+	subq %r8, %rcx		# last--
+	jmp test1
+done:
+	ret
+
+# Stack starts here and grows to lower addresses
+	.pos 0x200
+stack:
